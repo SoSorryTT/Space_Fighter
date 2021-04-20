@@ -93,6 +93,14 @@ class Sprite(GameCanvasElement):
             self.y,
             image=self.photo_image)
 
+class KeyboardHandler:
+    def __init__(self, successor=None):
+        self.successor = successor
+
+    def handle(self, event):
+        if self.successor:
+            self.successor.handle(event)
+
 
 class GameApp(ttk.Frame): 
     def __init__(self, parent, canvas_width=800, canvas_height=500, update_delay=33):
@@ -103,6 +111,9 @@ class GameApp(ttk.Frame):
         self.canvas_height = canvas_height
         
         self.update_delay = update_delay
+
+        self.key_pressed_handler = KeyboardHandler()
+        self.key_released_handler = KeyboardHandler()
 
         self.grid(sticky="news")
         self.create_canvas()
@@ -161,7 +172,13 @@ class GameApp(ttk.Frame):
         pass
 
     def on_key_pressed(self, event):
-        pass
+        self.key_pressed_handler.handle(event)
 
     def on_key_released(self, event):
+        self.key_released_handler.handle(event)
+
+class EnemyGenerationStrategy(ABC):
+    @abstractmethod
+    def generate(self, space_game, ship):
         pass
+
